@@ -60,11 +60,15 @@ test('nodes are disconnected on delete', () => {
 test('nodes are connected at depth', () => {
   const graph = new Graph<number, IUser>();
   users.forEach((user, i) => graph.add(i, user));
-  expect(graph.get(0).isConnectedTo(graph.get(1), 3)).toBe(false);
+  expect(graph.get(0).isConnectedTo(graph.get(1), 2)).toBe(false);
   graph.get(0).connect(graph.get(1));
   graph.get(1).connect(graph.get(2));
   graph.get(2).connect(graph.get(3));
   graph.get(3).connect(graph.get(4));
   graph.get(4).connect(graph.get(5));
+  graph.get(5).connect(graph.get(0));
+  expect(graph.get(0).isConnectedTo(graph.get(2), 1)).toBe(false);
   expect(graph.get(0).isConnectedTo(graph.get(2), 2)).toBe(true);
+  expect(graph.get(0).isConnectedTo(graph.get(5), 4)).toBe(false);
+  expect(graph.get(0).isConnectedTo(graph.get(5), 5)).toBe(true);
 });

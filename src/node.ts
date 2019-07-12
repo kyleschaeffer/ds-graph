@@ -45,23 +45,31 @@ export class Node<T> {
     if (depth <= 1) return this.nodes.has(node);
 
     // Build a node queue and track seen nodes
-    const nodeQueue: Array<Node<T>> = [this];
+    let nodeQueue: Array<Node<T>> = [this];
     const seenNodes: Set<Node<T>> = new Set<Node<T>>();
 
-    // Recursively search connected nodes (breadth-first-traversal)
-    while (nodeQueue.length) {
-      // Get next node in queue
-      const searchNode = nodeQueue.shift();
-      if (seenNodes.has(searchNode)) continue;
+    // Search connected nodes (breadth-first-traversal)
+    let currentDepth: number = 0;
+    while (nodeQueue.length && currentDepth < depth) {
+      // Queue up nodes for iteration at next depth level
+      const nextNodeQueue: Array<Node<T>> = [];
 
-      // Mark as seen
-      seenNodes.add(searchNode);
+      // Search nodes in queue
+      for (const searchNode of nodeQueue) {
+        // Found a match
+        if (searchNode.isConnectedTo(node)) return true;
 
-      // Enqueue children
-      nodeQueue.push(...searchNode.nodes);
+        // Already seen/mark as seen
+        if (seenNodes.has(searchNode)) continue;
+        seenNodes.add(searchNode);
 
-      // Search recursively
-      return searchNode.isConnectedTo(node, depth - 1);
+        // Enqueue children
+        nextNodeQueue.push(...searchNode.nodes);
+      }
+
+      // Increase depth
+      nodeQueue = nextNodeQueue;
+      currentDepth++;
     }
 
     // Not found
